@@ -1,0 +1,213 @@
+<div class="p-6 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+
+  <div class="flex justify-end items-center mb-6 gap-4">
+    <button (click)="toggleForm()" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium p-1.5 md:px-4 md:py-2 rounded-lg shadow-md hover:from-emerald-600 hover:to-teal-600 transition duration-200">
+      {{ showForm ? ' - Close Form' : '+ Add Department' }}
+    </button>
+    <button (click)="toggleModuleForm()" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium p-1.5 md:px-4 md:py-2 rounded-lg shadow-md hover:from-emerald-600 hover:to-teal-600 transition duration-200">
+      {{ showAssignForm ? ' - Close Form' : '+ Assign Employee Department '
+      }}
+    </button>
+  </div>
+
+  <div *ngIf="Dashboard" >
+
+ <div *ngFor="let dept of hierarchy" class="p-6 bg-white rounded-xl shadow-lg mb-10 border border-gray-200">
+  <!-- Department -->
+  <div class="flex flex-col items-center relative">
+    <div class="bg-indigo-600 text-white px-6 py-3 rounded-full shadow-md font-bold text-lg">
+      🏢 {{ dept.departmentName }}
+    </div>
+
+    <!-- Vertical line down -->
+    <div class="w-1 h-6 bg-gray-300"></div>
+
+    <!-- Segment Head -->
+    <div class="flex flex-col items-center">
+      <div class="bg-indigo-100 px-4 py-2 rounded-full shadow font-semibold text-indigo-700">
+        👤 {{ dept.segmentHead.name }}
+        <span class="text-sm text-gray-500">({{ dept.segmentHead.role }})</span>
+      </div>
+
+      <!-- Vertical line -->
+      <div class="w-1 h-6 bg-gray-300"></div>
+
+      <!-- Managers (horizontal row) -->
+      <div class="flex justify-center space-x-8">
+        <div *ngFor="let mgr of dept.segmentHead.managers" class="flex flex-col items-center">
+          <!-- Manager -->
+          <div class="bg-green-100 px-4 py-2 rounded-full shadow font-medium text-green-700">
+            📌 {{ mgr.name }}
+            <span class="text-sm text-gray-500">({{ mgr.role }})</span>
+          </div>
+
+          <!-- Line down -->
+          <div class="w-1 h-6 bg-gray-300"></div>
+
+          <!-- Users under Manager -->
+          <div class="flex flex-col space-y-3">
+            <div *ngFor="let usr of mgr.users"
+                 class="bg-gray-100 px-3 py-2 rounded-full shadow-sm flex items-center space-x-2">
+              <span class="text-gray-600">🔹</span>
+              <span class="text-gray-800 font-medium">{{ usr.name }}</span>
+              <span class="text-sm text-gray-500">({{ usr.role }})</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+  
+  <div *ngIf="showForm" class="bg-white p-6 rounded-xl shadow max-w-3xl mx-auto">
+    <h2 class="text-2xl font-bold text-indigo-700 mb-4">
+      Add Department
+    </h2>
+    <form [formGroup]="departmentForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <!-- Department Name -->
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+          Department Name
+          <span class="text-red-500">
+            *
+          </span>
+        </label>
+        <input type="text" id="name" formControlName="name" class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm 
+        focus:border-blue-500 focus:ring-blue-500" placeholder="Enter department name">
+        <div *ngIf="departmentForm.get('name')?.invalid && departmentForm.get('name')?.touched"
+        class="text-red-500 text-sm mt-1">
+          Department name is required.
+        </div>
+      </div>
+
+      <div>
+        <label for="SegmentHeadId" class="block text-sm font-medium text-gray-700 mb-2">
+          Segment Head
+          <span class="text-red-500">
+            *
+          </span>
+        </label>
+        <select id="SegmentHeadId" formControlName="SegmentHeadId" name="SegmentHeadId" required
+        class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+           <option [ngValue]="null" disabled>
+          Select Segment Head
+          </option>
+          @for (user of Segments; track user.localId) {
+          <option [ngValue]="user.localId">
+            {{ user.fullName }} ({{ user.username }})
+          </option>
+          }
+        </select>
+      </div>
+      <!-- Submit Button -->
+      <div class="flex justify-end mt-4">
+        <button type="submit" [disabled]="departmentForm.invalid" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">
+          Add Department
+        </button>
+      </div>
+    </form>
+    <!-- Success & Error Messages -->
+    <div *ngIf="successMessage" class="mt-4 text-green-600">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="mt-4 text-red-600">
+      {{ errorMessage }}
+    </div>
+  </div>
+
+
+
+  <div *ngIf="showAssignForm" class="bg-white p-6 rounded-xl shadow max-w-5xl mx-auto">
+    <h2 class="text-2xl font-bold text-indigo-700 mb-6 text-center">
+      Assign Department Roles
+    </h2>
+    <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Department -->
+      <div>
+        <label for="department" class="block text-sm font-medium text-gray-700 mb-2">
+          Department
+          <span class="text-red-500">
+            *
+          </span>
+        </label>
+        <select id="department" [(ngModel)]="DepartmentId" name="department" required
+        class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          <option [ngValue]="null" disabled>
+           Select Department
+          </option>
+          <option *ngFor="let dept of departments" [value]="dept.id">
+            {{ dept.name }}
+          </option>
+        </select>
+      </div>
+
+      
+      <!-- Reporting Manager -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Reporting Manager
+        </label>
+        <select name="Parentemployee" [(ngModel)]="ManagerUserId" (ngModelChange)="onParentChanged($event)"
+        class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm">
+          <option [ngValue]="null" disabled>
+          Select Reporting Manager
+          </option>
+          @for (user of users; track user.localId) {
+          <option [ngValue]="user.localId">
+            {{ user.fullName }} ({{ user.role }}) ({{ user.username }})
+          </option>
+          }
+        </select>
+      </div>
+      <!-- Select Employee -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+        Employee
+        </label>
+        <select name="employee" [(ngModel)]="selectedusersId" (ngModelChange)="onEmployeeSelected($event)"
+        class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm">
+          <option [ngValue]="0" disabled>
+         Select employee 
+          </option>
+          @for (user of filteredUsers; track user.localId) {
+          <option [ngValue]="user.localId">
+            {{ user.fullName }} ({{ user.role }}) ({{ user.username }})
+          </option>
+          }
+        </select>
+      </div>
+      <!-- Selected Employees -->
+      <div class="md:col-span-2">
+        @if (selectedusers.length > 0) {
+        <div class="mt-2">
+          <h3 class="text-sm font-medium text-gray-700 mb-2">
+            Selected Employees
+          </h3>
+          <ul class="space-y-2">
+            @for (emp of selectedusers; track emp.localId) {
+            <li class="flex items-center justify-between bg-gray-100 p-2 rounded-md">
+              <span>
+                {{ emp.fullName }}
+              </span>
+              <button type="button" (click)="removeEmployee(emp.localId)" class="text-red-600 hover:text-red-800"
+              title="Remove">
+                &#x2212;
+              </button>
+            </li>
+            }
+          </ul>
+        </div>
+        }
+      </div>
+      <!-- Submit Button -->
+      <div class="md:col-span-2 flex justify-end mt-4">
+        <button type="submit" (click)="onSubmitDepartmentHierarchy()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
+          Create Hierarchy
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

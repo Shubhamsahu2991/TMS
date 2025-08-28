@@ -1,0 +1,79 @@
+<div class="p-6 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+  <div class="bg-white p-6 rounded-xl shadow max-w-3xl mx-auto">
+
+    <h2 class="text-2xl font-bold text-indigo-700 mb-4">Assign Employee to Project</h2>
+
+    <form class="space-y-6">
+
+      <!-- Project Dropdown -->
+      <div class="mb-4">
+        <label for="projectSelect" class="block text-sm font-medium text-gray-700 mb-2">Select Project</label>
+        <select [(ngModel)]="selectedProjectId" name="project" (ngModelChange)="onProjectChange($event)"
+          class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm">
+          <option [ngValue]="null">-- Select Project --</option>
+          @for (proj of projectDropdownList; track proj.projectId) {
+          <option [ngValue]="proj.projectId">{{ proj.projectName }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Module Dropdown -->
+      <div class="mb-4" *ngIf="modules.length > 0">
+        <label for="moduleSelect" class="block text-sm font-medium text-gray-700 mb-2">Select Module</label>
+        <select [(ngModel)]="selectedModuleId" name="module"
+          class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm">
+          <option [ngValue]="null">-- Select Module --</option>
+          <option *ngFor="let mod of modules" [ngValue]="mod.value">{{ mod.label }}</option>
+        </select>
+      </div>
+
+
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Select Employee</label>
+        <select name="employee" [(ngModel)]="selectedEmployeeId" (ngModelChange)="onEmployeeSelected($event)"
+          class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm">
+          <option [ngValue]="null" disabled>-- Select employee --</option>
+          @for (user of users; track user.localId) {
+          <option [ngValue]="user.localId"> ( {{ user.username }} ) {{ user.fullName }}</option>
+          }
+        </select>
+      </div>
+
+
+      <!-- Selected Employees List -->
+      @if (selectedEmployees.length > 0) {
+      <div class="mt-4">
+        <h3 class="text-sm font-medium text-gray-700 mb-2">Selected Employees</h3>
+        <ul class="space-y-2">
+          @for (emp of selectedEmployees; track emp.localId) {
+          <li class="flex items-center justify-between bg-gray-100 p-2 rounded-md">
+            <span>{{ emp.fullName }}</span>
+            <button type="button" (click)="removeEmployee(emp.localId)" class="text-red-600 hover:text-red-800"
+              title="Remove">
+              &#x2212; <!-- Minus sign -->
+            </button>
+          </li>
+          }
+        </ul>
+      </div>
+      }
+
+
+
+
+      <!-- Assign Button -->
+      <div class="flex justify-end mt-4">
+        <button type="button" (click)="onSubmit()"
+          class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">
+          Assign Employee
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Selected Project Preview -->
+
+
+  </div>
+</div>

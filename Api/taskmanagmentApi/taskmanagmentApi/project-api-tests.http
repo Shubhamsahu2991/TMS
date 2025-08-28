@@ -1,0 +1,40 @@
+### Project API Tests
+
+### 1. Create a new project
+POST https://localhost:7001/api/Project
+Content-Type: application/json
+
+{
+  "projectName": "Task Management System",
+  "isActive": true,
+  "description": "A comprehensive task management system for teams"
+}
+
+### 2. Get all projects
+GET https://localhost:7001/api/Project
+
+### 3. Get project by ID
+GET https://localhost:7001/api/Project/1
+
+### 4. Update project
+PUT https://localhost:7001/api/Project/1
+Content-Type: application/json
+
+{
+  "projectName": "Updated Task Management System",
+  "isActive": true,
+  "description": "An updated comprehensive task management system for teams"
+}
+
+### 5. Delete project (soft delete)
+DELETE https://localhost:7001/api/Project/1
+
+### 6. Create another project
+POST https://localhost:7001/api/Project
+Content-Type: application/json
+
+{
+  "projectName": "E-commerce Platform",
+  "isActive": true,
+  "description": "Online shopping platform with payment integration"
+} 
